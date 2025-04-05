@@ -46,6 +46,7 @@ def process_video(video_path):
 
     r_elbow_angle = []
     l_elbow_angle = []
+    r_shoulder_ycord = []
 
     # check if video opened
     if not cap.isOpened():
@@ -93,12 +94,17 @@ def process_video(video_path):
 
                 r_elbow_angle.append(r_angle)
                 l_elbow_angle.append(l_angle)
+                r_shoulder_ycord.append(round(r_shoulder.y, 4))
+
 
                 # visualize
                 cv2.putText(image, str(r_angle), tuple(np.multiply((r_elbow.x, r_elbow.y), [width, height]).astype(int)),
-                            cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2, cv2.LINE_AA)
+                            cv2.FONT_HERSHEY_PLAIN, 1.5, (255, 255, 255), 2, cv2.LINE_AA)
                 cv2.putText(image, str(l_angle), tuple(np.multiply((l_elbow.x, l_elbow.y), [width, height]).astype(int)),
-                            cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2, cv2.LINE_AA)
+                            cv2.FONT_HERSHEY_PLAIN, 1.5, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.putText(image, str(round(r_shoulder.y, 4)),
+                            tuple(np.multiply((r_shoulder.x, r_shoulder.y), [width, height]).astype(int)),
+                            cv2.FONT_HERSHEY_PLAIN, 1.5, (255, 255, 255), 2, cv2.LINE_AA)
             except AttributeError:
                 pass
 
@@ -112,7 +118,21 @@ def process_video(video_path):
     cap.release()
     out.release()
     cv2.destroyAllWindows()
+    return get_averages(r_elbow_angle, l_elbow_angle, r_shoulder_ycord)
+
+
+def get_averages(re_angle, le_angle, r_should):
+    r_elbow_avg = np.mean(re_angle)
+    l_elbow_avg = np.mean(le_angle)
+    r_should_avg = np.mean(r_should)
+    return r_elbow_avg, l_elbow_avg, r_should_avg
+
+# def get_dips(r_should):
+
 
 
 if __name__ == '__main__':
-    process_video('dh-video-test.mkv')
+    values = process_video('dh-video-test-dip.mkv')
+    print(values[0])
+    print(values[1])
+    print(values[2])
