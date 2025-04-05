@@ -36,8 +36,8 @@ def process_video(video_path):
     cap = cv2.VideoCapture(video_path)
 
     # get video properties
-    width = 800
-    height = 600
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
 
     # define the codec and create VideoWriter object
@@ -55,6 +55,10 @@ def process_video(video_path):
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
             ret, frame = cap.read()
+
+            if not ret:
+                print("Empty frame, ending video processing")
+                break
 
             # invert the video
             frame = cv2.flip(frame, 1)
@@ -91,9 +95,9 @@ def process_video(video_path):
                 l_elbow_angle.append(l_angle)
 
                 # visualize
-                cv2.putText(image, str(r_angle), tuple(np.multiply((r_elbow.x, r_elbow.y), [640, 480]).astype(int)),
+                cv2.putText(image, str(r_angle), tuple(np.multiply((r_elbow.x, r_elbow.y), [width, height]).astype(int)),
                             cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2, cv2.LINE_AA)
-                cv2.putText(image, str(l_angle), tuple(np.multiply((l_elbow.x, l_elbow.y), [640, 480]).astype(int)),
+                cv2.putText(image, str(l_angle), tuple(np.multiply((l_elbow.x, l_elbow.y), [width, height]).astype(int)),
                             cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2, cv2.LINE_AA)
             except AttributeError:
                 pass
@@ -105,10 +109,6 @@ def process_video(video_path):
 
             # write the processed frame to the output video file
             out.write(image)
-
-            # show for testing
-            cv2.imshow('Backend Limb Detection', image)
-
     cap.release()
     out.release()
     cv2.destroyAllWindows()
