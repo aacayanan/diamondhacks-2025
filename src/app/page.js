@@ -16,7 +16,7 @@ export default function HomePage() {
         const fetchSessions = async () => {
             const { data, error } = await supabase
                 .from('sessions')
-                .select('origin_session_id')
+                .select('id')
                 .eq('user_id', userId);
 
             if (error) {
@@ -47,7 +47,7 @@ export default function HomePage() {
     return (
         <div id='page'>
             <div id='sessions-and-start'>
-            <SessionList sessions={sessions} />
+            <SessionList sessions={sessions}/>
             </div>
             <button onClick={handleClick}>Start Session</button>
             <br/>
