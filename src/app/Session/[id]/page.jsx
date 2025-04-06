@@ -180,26 +180,35 @@ function SessionPage() {
     // send to backend for testing
     const sendVideoToBackend = () => {
         if (recordedChunks.length) {
-            // create blob from recorded chunks
-            const blob = new Blob(recordedChunks, {type: 'video/webm'});
-            // create form data
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
             const formData = new FormData();
             formData.append('blob', blob, 'recorded-video.webm');
             formData.append('session_id', sessionId);
-            // send blob to backend
+
             fetch('http://127.0.0.1:5000/process', {
                 method: 'POST',
                 body: formData,
             })
-                .then(response => response.text())
-                .then(data => {
-                    console.log('Response from backend:', data);
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'processed-video.webm';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
                 })
                 .catch(error => {
-                    console.error('Error sending video to backend:', error)
+                    console.error('Error sending video to backend:', error);
                 });
         }
     };
+
 
     return (
         <div id="page" className="flex flex-col items-center gap-4 p-6">
@@ -278,7 +287,11 @@ function SessionPage() {
                         </div>
                         <div className='flex items-center justify-center'>
                             {recordedChunks.length > 0 && (
-                                <button disabled={!download} onClick={downloadVideo} className="bg-blue-500 text-white px-4 py-2 rounded">
+                                <button  onClick={() => {
+                                    sendVideoToBackend();
+                                    downloadVideo();
+                                }}
+                                        className="bg-blue-500 text-white px-4 py-2 rounded">
                                     Download Video
                                 </button>
                             )}
