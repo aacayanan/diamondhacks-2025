@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 function SessionPage() {
@@ -14,6 +14,9 @@ function SessionPage() {
     const [recordedChunks, setRecordedChunks] = useState([]);
     const [countdown, setCountdown] = useState(5);
     const [length, setLength] = useState(0);
+
+    const [download, setDownload] = useState(false);
+    const [disclaimer, setDisclaimer] = useState(false);
 
     let videoWidth = 720;
     let videoHeight = 540;
@@ -154,6 +157,9 @@ function SessionPage() {
         //set length of video
         await new Promise(resolve => setTimeout(resolve, 11000));
         stopRecording();
+
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        setDisclaimer(true);
     };
 
     // Check record state enable download
@@ -255,10 +261,30 @@ function SessionPage() {
                     </div>
                 </div>
             </div>
-            {recordedChunks.length > 0 && (
-                <button onClick={downloadVideo} className="bg-blue-500 text-white px-4 py-2 rounded">
-                    Download Video
-                </button>
+            {disclaimer && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/30 min-h-screen flex justify-center align-center w-full border-2'>
+                    <div className='w-[780px] h-56 relative bg-violet-50 rounded-lg overflow-hidden'>
+                        <div
+                            className='w-[780px] p-3.5 bg-white rounded-lg inline-flex flex-col justify-start items-start overflow-hidden'>
+                            <div className='w-[653px] justify-start text-black text-3xl font-normal'>
+                                Processing...
+                            </div>
+                        </div>
+                        <div className='self-stretch p-2.5 inline-flex justify-center items-center text-normal gap-2.5'>
+                            <div className='p-2.5 inline-flex justify-center items-center gap-2.5'>
+                                Your recording is being analyzed and will be available for you to download in ~30
+                                seconds. Please do NOT leave the page.
+                            </div>
+                        </div>
+                        <div className='flex items-center justify-center'>
+                            {recordedChunks.length > 0 && (
+                                <button disabled={!download} onClick={downloadVideo} className="bg-blue-500 text-white px-4 py-2 rounded">
+                                    Download Video
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
