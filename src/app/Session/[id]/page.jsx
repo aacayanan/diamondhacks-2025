@@ -179,6 +179,7 @@ function SessionPage() {
             // create form data
             const formData = new FormData();
             formData.append('blob', blob, 'recorded-video.webm');
+            formData.append('session_id', sessionId);
             // send blob to backend
             fetch('http://127.0.0.1:5000/process', {
                 method: 'POST',
