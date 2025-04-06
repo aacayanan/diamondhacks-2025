@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'next/navigation';
+import React, {useEffect, useRef, useState} from 'react';
+import {useParams} from 'next/navigation';
+import Link from "next/link";
 
 function SessionPage() {
     const params = useParams();
@@ -24,7 +25,7 @@ function SessionPage() {
     // Start the webcam feed the page routes
     useEffect(() => {
         const startVideo = async () => {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const stream = await navigator.mediaDevices.getUserMedia({video: true});
             const video = document.createElement("webcam-feed");
             if (video) {
                 video.srcObject = stream;
@@ -78,8 +79,8 @@ function SessionPage() {
 
                 ctx.strokeStyle = "red";
                 ctx.lineWidth = 10;
-                ctx.moveTo(0,420);
-                ctx.lineTo(720,420);
+                ctx.moveTo(0, 420);
+                ctx.lineTo(720, 420);
                 ctx.stroke();
 
                 if (results.poseLandmarks) {
@@ -98,7 +99,7 @@ function SessionPage() {
 
             const camera = new window.Camera(video, {
                 onFrame: async () => {
-                    await pose.send({ image: video });
+                    await pose.send({image: video});
                 },
                 width: videoWidth,
                 height: video,
@@ -148,7 +149,7 @@ function SessionPage() {
         setRecording(true);
 
         (function recordingLength(i) {
-            setTimeout(function() {
+            setTimeout(function () {
                 //counter for interface
                 if (--i) recordingLength(i);
                 setLength(10 - i);
@@ -165,7 +166,7 @@ function SessionPage() {
     // Check record state enable download
     const downloadVideo = () => {
         if (recordedChunks.length) {
-            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const blob = new Blob(recordedChunks, {type: 'video/webm'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
@@ -180,7 +181,7 @@ function SessionPage() {
     // send to backend for testing
     const sendVideoToBackend = () => {
         if (recordedChunks.length) {
-            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const blob = new Blob(recordedChunks, {type: 'video/webm'});
             const formData = new FormData();
             formData.append('blob', blob, 'recorded-video.webm');
             formData.append('session_id', sessionId);
@@ -247,7 +248,8 @@ function SessionPage() {
                 <div id="recording-button">
                     {!recording ? (
                         <div>
-                            <button onClick={startRecording} className="bg-green-500 h-16 w-64 text-xl text-black px-4 py-2 rounded">
+                            <button onClick={startRecording}
+                                    className="bg-green-500 h-16 w-64 text-xl text-black px-4 py-2 rounded cursor-pointer">
                                 Start Recording
                             </button>
                         </div>
@@ -266,12 +268,14 @@ function SessionPage() {
             <div id="instructions" className="flex flex-col rounded-lg gap-2.5 py-8 px-52 bg-white">
                 <div id="instructions-container" className="flex justify-center items-center">
                     <div id="instructions-style" className="text-center justify-start text-black/60 text-base">
-                        <p>When you press “Start Recording” a 5 second countdown will begin to give you time to prepare. The recording will go for 30 seconds and cannot be stopped.</p>
+                        <p>When you press “Start Recording” a 5 second countdown will begin to give you time to prepare.
+                            The recording will go for 30 seconds and cannot be stopped.</p>
                     </div>
                 </div>
             </div>
             {disclaimer && (
-                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/30 min-h-screen flex justify-center align-center w-full border-2'>
+                <div
+                    className='fixed inset-0 z-50 flex items-center justify-center bg-black/30 min-h-screen flex justify-center align-center w-full border-2'>
                     <div className='w-[780px] h-56 relative bg-violet-50 rounded-lg overflow-hidden'>
                         <div
                             className='w-[780px] p-3.5 bg-white rounded-lg inline-flex flex-col justify-start items-start overflow-hidden'>
@@ -285,16 +289,22 @@ function SessionPage() {
                                 seconds. Please do NOT leave the page.
                             </div>
                         </div>
-                        <div className='flex items-center justify-center'>
+                        <div className='flex items-center justify-center gap-4'>
                             {recordedChunks.length > 0 && (
-                                <button  onClick={() => {
+                                <button onClick={() => {
                                     sendVideoToBackend();
                                     downloadVideo();
                                 }}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded">
+                                        className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">
                                     Download Video
                                 </button>
+
                             )}
+                            <Link href={`/Report/${sessionId}`}>
+                                <button className="bg-green-500 text-white px-4 py-2 rounded cursor-pointer">
+                                    Go to Analytic Page
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

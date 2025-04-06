@@ -2,20 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 
-function AnalyticCard({ title, value }) {
-    const [color, setColor] = useState(0);
+function AnalyticCard({ title, value, color }) {
+    // const [color, setColor] = useState(0);
 
     // Update color based on the accuracy value
     // Green for 90 and above, yellow for 80-89, red for below 80
-    useEffect(() => {
-        if (value < 80) {
-            setColor(2); // red
-        } else if (value < 90) {
-            setColor(1); // yellow
-        } else {
-            setColor(0); // green (default)
-        }
-    }, [value]);
+    // useEffect(() => {
+    //     if (value < 80) {
+    //         setColor(2); // red
+    //     } else if (value < 90) {
+    //         setColor(1); // yellow
+    //     } else {
+    //         setColor(0); // green (default)
+    //     }
+    // }, [value]);
 
     return (
         <div className="w-96 h-96 relative bg-zinc-100 rounded-lg overflow-hidden">

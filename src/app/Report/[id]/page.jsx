@@ -74,9 +74,12 @@ function ReportPage() {
                     <h1>Session: {sessionId}</h1>
                 </div>
                 <div id='analytics-body' className='flex flex-row py-4 items-center gap-4'>
-                    <AnalyticCard title="Left Arm" value={`${Math.floor((sessionData?.l_elbow_angle / 180) * 100)}%`} />
-                    <AnalyticCard title="Right Arm" value={`${Math.floor((sessionData?.r_elbow_angle / 180) * 100)}%`} />
-                    <AnalyticCard title="BPM" value={Math.floor(sessionData?.bpm)} />
+                    <AnalyticCard title="Left Arm" value={`${Math.floor((sessionData?.l_elbow_angle / 180) * 100)}%`} color={(Math.floor((sessionData?.l_elbow_angle / 180) * 100) > 95) ? 0 : (Math.floor((sessionData?.l_elbow_angle / 180) * 100) > 80 ? 1 : 2)}
+                    />
+                    <AnalyticCard title="Right Arm" value={`${Math.floor((sessionData?.r_elbow_angle / 180) * 100)}%`} color={(Math.floor((sessionData?.r_elbow_angle / 180) * 100) > 95) ? 0 : (Math.floor((sessionData?.r_elbow_angle / 180) * 100) > 80 ? 1 : 2)}
+                    />
+                    <AnalyticCard title="BPM" value={Math.floor(sessionData?.bpm)} color={(Math.floor(sessionData?.bpm) >= 95 && Math.floor(sessionData?.bpm) <= 99) || (Math.floor(sessionData?.bpm) >= 121 && Math.floor(sessionData?.bpm) <= 125) ? 1 : (Math.floor(sessionData?.bpm) > 125 || Math.floor(sessionData?.bpm) < 94 ? 2 : 0)}
+                    />
                 </div>
             </div>
             <div id="gemini-responses"
