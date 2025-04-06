@@ -12,7 +12,7 @@ function SessionPage() {
     const canvasRef = useRef(null);
     const [recording, setRecording] = useState(false);
     const [recordedChunks, setRecordedChunks] = useState([]);
-    const [countdown, setCountdown] = useState(0);
+    const [countdown, setCountdown] = useState(5);
     const [length, setLength] = useState(0);
 
     let videoWidth = 720;
@@ -26,6 +26,7 @@ function SessionPage() {
             if (video) {
                 video.srcObject = stream;
             }
+            console.log(stream.getVideoTracks()[0].getSettings().frameRate)
         };
         startVideo();
     }, []);
@@ -74,8 +75,8 @@ function SessionPage() {
 
                 ctx.strokeStyle = "red";
                 ctx.lineWidth = 10;
-                ctx.moveTo(0,580);
-                ctx.lineTo(960,580);
+                ctx.moveTo(0,420);
+                ctx.lineTo(720,420);
                 ctx.stroke();
 
                 if (results.poseLandmarks) {
@@ -114,13 +115,12 @@ function SessionPage() {
 
     // Start recorder for the stream that has no drawn anchors
     const startRecording = async () => {
-        (function recordingCountdown(i) {
-            setTimeout(function() {
-                //counter for interface
-                if (--i) recordingCountdown(i);
-                setCountdown(i + 1);
-            }, 1000)
-        })(5);
+        function countdownTimer() {
+            setCountdown(countdown - 1);
+            if (countdown > 0) {
+                setTimeout(countdownTimer, 1000)
+            }
+        }
 
         //delay before starting recording
         await new Promise(resolve => setTimeout(resolve, 5000));
@@ -220,6 +220,11 @@ function SessionPage() {
                             height={videoHeight}
                             className="rounded-lg rotate-y-180 border border-gray-400"
                         />
+                        {countdown > 0 && (
+                            <div className="w-28 p-2.5 inline-flex flex-col justify-center items-center gap-2.5">
+                                {countdown}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -227,24 +232,31 @@ function SessionPage() {
                 <div id="recording-button">
                     {!recording ? (
                         <div>
-                            <button onClick={startRecording} className="bg-green-500 text-black px-4 py-2 rounded">
+                            <button onClick={startRecording} className="bg-green-500 h-16 w-64 text-xl text-black px-4 py-2 rounded">
                                 Start Recording
                             </button>
                         </div>
                     ) : (
                         <div>
-                            <button className="bg-red-500 text-white px-4 py-2 rounded">
+                            <button className="bg-red-500 h-16 w-64 text-xl text-white px-4 py-2 rounded">
                                 Recording...
                             </button>
                         </div>
                     )}
                 </div>
-                <div id="video-time" className="flex justify-items items-center p-2">
+                <div id="video-time" className="flex justify-items items-center text-xl p-4">
                     <p>{length}/10 seconds</p>
                 </div>
             </div>
+            <div id="instructions" className="flex flex-col rounded-lg gap-2.5 py-8 px-52 bg-white">
+                <div id="instructions-container" className="flex justify-center items-center">
+                    <div id="instructions-style" className="text-center justify-start text-black/60 text-base">
+                        <p>When you press “Start Recording” a 5 second countdown will begin to give you time to prepare. The recording will go for 30 seconds and cannot be stopped.</p>
+                    </div>
+                </div>
+            </div>
             {recordedChunks.length > 0 && (
-                <button onClick={sendVideoToBackend} className="bg-blue-500 text-white px-4 py-2 rounded">
+                <button onClick={downloadVideo} className="bg-blue-500 text-white px-4 py-2 rounded">
                     Download Video
                 </button>
             )}
