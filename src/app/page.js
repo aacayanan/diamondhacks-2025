@@ -6,7 +6,6 @@ import Link from 'next/link';
 import {supabase} from "@/lib/supabaseClient";
 import {useRouter} from 'next/navigation';
 import SessionList from "../components/SessionList.jsx";
-import {Send} from "lucide-react";
 
 export default function HomePage() {
     const router = useRouter();
