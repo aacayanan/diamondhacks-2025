@@ -28,7 +28,9 @@ def process():
     # save the uploaded video file directly using FileStorage.save()
     video.save(save_path)
 
-    process_video(save_path)
+    send_to_supabase = process_video(save_path)
+
+    # now send to supabase
 
     return f"Video saved and processed at: {save_path}", 200
 
