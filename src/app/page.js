@@ -47,7 +47,7 @@ export default function HomePage() {
     return (
         <div id='page'>
             <div id='sessions-and-start'>
-            <SessionList sessions={sessions}/>
+            {/*<SessionList sessions={sessions}/>*/}
             </div>
             <button onClick={handleClick}>Start Session</button>
             <br/>

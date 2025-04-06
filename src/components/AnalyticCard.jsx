@@ -1,34 +1,46 @@
 'use client';
 
-import React from 'react';
-import {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 
-function AnalyticCard({ sessionId, title}) {
+function AnalyticCard({ title, value }) {
     const [color, setColor] = useState(0);
 
-    //get accuracy from backend
-    //const accuracy
-
-    //conditional if the accuracy is under 90 setColor(1) for yellow
-    //conditional else if the accuracy is under 80 setColor(2) for red
+    // Update color based on the accuracy value
+    // Green for 90 and above, yellow for 80-89, red for below 80
+    useEffect(() => {
+        if (value < 80) {
+            setColor(2); // red
+        } else if (value < 90) {
+            setColor(1); // yellow
+        } else {
+            setColor(0); // green (default)
+        }
+    }, [value]);
 
     return (
         <div className="w-96 h-96 relative bg-zinc-100 rounded-lg overflow-hidden">
-            <div className="w-56 h-56 left-[68px] top-[44px] absolute bg-violet-50 rounded-full"/>
+            {/* Background circle */}
+            <div className="w-56 h-56 left-[68px] top-[44px] absolute bg-violet-50 rounded-full" />
+
+            {/* Conditional outline based on the color state */}
             {color === 0 && (
-                <div className="w-56 h-56 left-[68px] top-[44px] absolute bg-violet-50 rounded-full outline outline-4 outline-green-300"/>
+                <div className="w-56 h-56 left-[68px] top-[44px] absolute bg-violet-50 rounded-full outline outline-4 outline-green-300" />
             )}
             {color === 1 && (
-                <div className="w-56 h-56 left-[68px] top-[44px] absolute bg-violet-50 rounded-full outline outline-4 outline-yellow-300"/>
+                <div className="w-56 h-56 left-[68px] top-[44px] absolute bg-violet-50 rounded-full outline outline-4 outline-yellow-300" />
             )}
             {color === 2 && (
-                <div className="w-56 h-56 left-[68px] top-[44px] absolute bg-violet-50 rounded-full outline outline-4 outline-red-300"/>
+                <div className="w-56 h-56 left-[68px] top-[44px] absolute bg-violet-50 rounded-full outline outline-4 outline-red-300" />
             )}
-            <div className="w-64 h-7 left-[52px] top-[292px] absolute text-center justify-start text-black text-2xl leading-normal">
-                title
+
+            {/* Title */}
+            <div className="w-64 h-7 left-[52px] top-[292px] absolute text-center text-black text-2xl leading-normal">
+                {title}
             </div>
-            <div className="w-52 h-24 left-[77px] top-[110px] absolute text-center justify-start text-black text-8xl leading-[96px]">
-                accuracy%
+
+            {/* Accuracy Value */}
+            <div className="w-52 h-24 left-[77px] top-[110px] absolute text-center text-black text-8xl leading-[96px]">
+                {value}
             </div>
         </div>
     );
