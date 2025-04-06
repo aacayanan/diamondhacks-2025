@@ -4,7 +4,7 @@ import os
 import cv2
 from supabase import create_client, Client
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from video_process import process_video
 from google import genai
 from flask_cors import CORS
@@ -49,8 +49,8 @@ def process():
     }
     response = supabase.table('sessions').update(data).eq('id', session_id).execute()
     print(response)
-    return f"Video saved and processed at: {save_path}", 200
-
+    # return f"Video saved and processed at: {save_path}", 200
+    return send_file(save_path, as_attachment=True, download_name='processed_video.webm')
 
 @app.route('/gemini', methods=['POST'])
 def gemini():

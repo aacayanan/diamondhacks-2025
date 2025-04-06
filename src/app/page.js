@@ -57,8 +57,7 @@ export default function HomePage() {
                 </div>
             </div>
             <div id='sessions-and-start' className='w-96 inline-flex flex-col justify-start items-center gap-12'>
-                <div id="sessions"
-                     className='w-96 h-[651px] px-7 py-8 bg-white rounded-lg inline-flex flex-col justify-start items-start gap-6 overflow-hidden'>
+                <div id="sessions" className='w-96 h-[651px] px-7 py-8 bg-white rounded-lg inline-flex flex-col justify-start items-start gap-6 overflow-hidden'>
                     <div id="sessions-title"
                          className="self-stretch h-7 justify-start text-black text-3xl font-normal leading-loose">
                         Previous Sessions
