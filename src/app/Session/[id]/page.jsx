@@ -1,8 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'next/navigation';
 
 function SessionPage() {
+    const params = useParams();
+    const sessionId = params.id;
+
     const recorderRef = useRef(null);
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
@@ -10,6 +14,9 @@ function SessionPage() {
     const [recordedChunks, setRecordedChunks] = useState([]);
     const [countdown, setCountdown] = useState(0);
     const [length, setLength] = useState(0);
+
+    let videoWidth = 720;
+    let videoHeight = 540;
 
     // Start the webcam feed the page routes
     useEffect(() => {
@@ -78,7 +85,7 @@ function SessionPage() {
                     });
                     window.drawLandmarks(ctx, results.poseLandmarks, {
                         color: '#FF0000',
-                        lineWidth: 2,
+                        lineWidth: 1,
                     });
                 }
 
@@ -89,8 +96,8 @@ function SessionPage() {
                 onFrame: async () => {
                     await pose.send({ image: video });
                 },
-                width: 960,
-                height: 720,
+                width: videoWidth,
+                height: video,
             });
 
             camera.start();
@@ -165,39 +172,53 @@ function SessionPage() {
     };
 
     return (
-        <div className="flex flex-col items-center gap-4 p-6">
-            <video
-                id="webcam-feed"
-                ref={videoRef}
-                width={960}
-                height={720}
-                autoPlay
-                playsInline
-                muted
-                className="hidden"
-            />
-            <canvas
-                id="pose-canvas"
-                ref={canvasRef}
-                width={960}
-                height={720}
-                className="rotate-y-180 border border-gray-400"
-            />
-            {!recording ? (
-                <div>
-                    <button onClick={startRecording} className="bg-green-500 text-white px-4 py-2 rounded">
-                        Start Recording
-                    </button>
-                    <p>{countdown}</p>
+        <div id="page" className="flex flex-col items-center gap-4 p-6">
+            <div id="title-video" className="flex flex-col rounded-lg gap-2.5 py-8 px-52 bg-white">
+                <div id="title" className="text-5xl text-center align-content">
+                    <h1>New Session</h1>
                 </div>
-            ) : (
-                <div>
-                    <button className="bg-red-500 text-white px-4 py-2 rounded">
-                    Recording...
-                    </button>
-                    <p>{length}</p>
+                <div id="video-container" className="flex justify-center align-content rounded-lg bg-zinc-100">
+                    <div id="video-style" className="rounded-lg border-black p-4">
+                        <video
+                            id="webcam-feed"
+                            ref={videoRef}
+                            width={videoWidth}
+                            height={videoHeight}
+                            autoPlay
+                            playsInline
+                            muted
+                            className="hidden"
+                        />
+                        <canvas
+                            id="pose-canvas"
+                            ref={canvasRef}
+                            width={videoWidth}
+                            height={videoHeight}
+                            className="rounded-lg rotate-y-180 border border-gray-400"
+                        />
+                    </div>
                 </div>
-            )}
+            </div>
+            <div id="recordbutton-timer" className="flex flex-row">
+                <div id="recording-button">
+                    {!recording ? (
+                        <div>
+                            <button onClick={startRecording} className="bg-green-500 text-black px-4 py-2 rounded">
+                                Start Recording
+                            </button>
+                        </div>
+                    ) : (
+                        <div>
+                            <button className="bg-red-500 text-white px-4 py-2 rounded">
+                                Recording...
+                            </button>
+                        </div>
+                    )}
+                </div>
+                <div id="video-time" className="flex justify-items items-center p-2">
+                    <p>{length}/10 seconds</p>
+                </div>
+            </div>
             {recordedChunks.length > 0 && (
                 <button onClick={downloadVideo} className="bg-blue-500 text-white px-4 py-2 rounded">
                     Download Video
