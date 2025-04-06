@@ -5,6 +5,7 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from video_process import process_video
+from google import genai
 
 app = Flask(__name__)
 load_dotenv()
@@ -45,6 +46,45 @@ def process():
     response = supabase.table('sessions').update(data).eq('id', session_id).execute()
     print(response)
     return f"Video saved and processed at: {save_path}", 200
+
+
+@app.route('/gemini', methods=['POST', 'OPTIONS'])
+def gemini():
+    if request.method == 'OPTIONS':
+        print("meow")
+        return jsonify({'response': "meow"})
+        # Load environment variables
+        dotenv_path = find_dotenv()
+        load_dotenv(dotenv_path)
+        gemini_key = os.getenv('GEMINI_KEY')
+
+        # Get data from POST request
+        data = request.get_json()
+        left_arm = data.get('left_arm')
+        right_arm = data.get('right_arm')
+        bpm = data.get('bpm')
+
+        # Prepare prompt dynamically
+        system_prompt = (
+            "You are an AI assistant that gives CPR performance feedback.\n"
+            "Do not have an humanoid introduction, it should be straight to the point.\n"
+            "Evaluate the following metrics and give constructive advice:\n"
+        )
+        content = f"Left Arm Accuracy: {left_arm} Right Arm Accuracy: {right_arm} BPM: {bpm}"
+
+        # Set up Gemini client
+        client = genai.Client(api_key=gemini_key)
+
+        # Call Gemini model
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=[system_prompt + content],
+        )
+
+        # Extract and return the generated text
+        generated_text = response.candidates[0].content.parts[0].text
+        print(generated_text)
+        return jsonify({'response': generated_text})
 
 
 if __name__ == "__main__":
