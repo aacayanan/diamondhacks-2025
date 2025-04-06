@@ -1,4 +1,6 @@
 import os
+
+import cv2
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
@@ -37,7 +39,8 @@ def process():
 
     data = {
         'r_elbow_angle': send_to_supabase[0],
-        'l_elbow_angle': send_to_supabase[1]
+        'l_elbow_angle': send_to_supabase[1],
+        'bpm': send_to_supabase[2],
     }
     response = supabase.table('sessions').update(data).eq('id', session_id).execute()
     print(response)
