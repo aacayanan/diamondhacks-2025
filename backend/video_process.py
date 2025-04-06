@@ -121,17 +121,17 @@ def calculate_angle(a, b, c):
 #     cv2.destroyAllWindows()
 #     print(r_shoulder_ycord)
 #     return get_averages(r_elbow_angle, l_elbow_angle, r_shoulder_ycord)
-def process_video(video_file):
+def process_video(video_path):
     # initialize the mediapipe poses and drawing utilities
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.webm') as tmp:
-        tmp.write(video_file.read())
-        tmp_path = tmp.name
+    # with tempfile.NamedTemporaryFile(delete=False, suffix='.webm') as tmp:
+    #     tmp.write(video_file.read())
+    #     tmp_path = tmp.name
 
     # open video file
-    cap = cv2.VideoCapture(tmp_path)
+    cap = cv2.VideoCapture(video_path)
 
     # get video properties
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))

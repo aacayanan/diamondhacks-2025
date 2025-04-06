@@ -158,6 +158,29 @@ function SessionPage() {
         }
     };
 
+    // send to backend for testing
+    const sendVideoToBackend = () => {
+        if (recordedChunks.length) {
+            // create blob from recorded chunks
+            const blob = new Blob(recordedChunks, {type: 'video/webm'});
+            // create form data
+            const formData = new FormData();
+            formData.append('blob', blob, 'recorded-video.webm');
+            // send blob to backend
+            fetch('http://127.0.0.1:5000/process', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.text())
+                .then(data => {
+                    console.log('Response from backend:', data);
+                })
+                .catch(error => {
+                    console.error('Error sending video to backend:', error)
+                });
+        }
+    };
+
     return (
         <div className="flex flex-col items-center gap-4 p-6">
             <video
@@ -193,7 +216,7 @@ function SessionPage() {
                 </div>
             )}
             {recordedChunks.length > 0 && (
-                <button onClick={downloadVideo} className="bg-blue-500 text-white px-4 py-2 rounded">
+                <button onClick={sendVideoToBackend} className="bg-blue-500 text-white px-4 py-2 rounded">
                     Download Video
                 </button>
             )}

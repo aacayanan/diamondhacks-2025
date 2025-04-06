@@ -3,6 +3,7 @@ import tempfile
 
 from flask import Flask, request, jsonify
 import cv2
+from video_process import process_video
 
 app = Flask(__name__)
 
@@ -14,31 +15,20 @@ def home():
 
 @app.route('/process', methods=['POST'])
 def process():
-    video = request.data
+    if 'blob' not in request.files:
+        return jsonify(message="No file", status_code=400)
+
+    video = request.files['blob']
 
     # define the path where you want to save the video locally
     save_dir = './'
     os.makedirs(save_dir, exist_ok=True)  # ensure the directory exists
     save_path = os.path.join(save_dir, 'uploaded_video.webm')
 
-    # save the uploaded video bytes directly to the target path
-    with open(save_path, 'wb') as f:
-        f.write(video)
+    # save the uploaded video file directly using FileStorage.save()
+    video.save(save_path)
 
-    # process the saved video
-    cap = cv2.VideoCapture(save_path)
-
-    if not cap.isOpened():
-        return "Error opening video file", 400
-
-    ret, frame = cap.read()
-
-    if ret:
-        cv2.imshow('Frame', frame)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-    cap.release()
+    process_video(save_path)
 
     return f"Video saved and processed at: {save_path}", 200
 
