@@ -65,6 +65,12 @@ function SessionPage() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 10;
+                ctx.moveTo(0,580);
+                ctx.lineTo(960,580);
+                ctx.stroke();
+
                 if (results.poseLandmarks) {
                     window.drawConnectors(ctx, results.poseLandmarks, window.POSE_CONNECTIONS, {
                         color: '#00FF00',
