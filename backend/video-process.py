@@ -118,6 +118,7 @@ def process_video(video_path):
     cap.release()
     out.release()
     cv2.destroyAllWindows()
+    print(r_shoulder_ycord)
     return get_averages(r_elbow_angle, l_elbow_angle, r_shoulder_ycord)
 
 
@@ -127,12 +128,11 @@ def get_averages(re_angle, le_angle, r_should):
     r_should_avg = np.mean(r_should)
     return r_elbow_avg, l_elbow_avg, r_should_avg
 
-# def get_dips(r_should):
 
 
 
 if __name__ == '__main__':
-    values = process_video('dh-video-test-dip.mkv')
+    values = process_video('dh-video-test-cpr-2.mkv')
     print(values[0])
     print(values[1])
     print(values[2])
