@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 function SessionList( { sessions } ) {
     return (
-        <div className="flex h-96 overflow-y-auto rounded p-4 w-[300px]">
+        <div className="flex h-[651px] overflow-y-auto rounded p-4 w-[300px]">
             <ul className="space-y-2">
                 {sessions.length === 0 ? (
                     <li className="text-gray-500">No sessions completed.</li>
