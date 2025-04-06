@@ -14,18 +14,19 @@ function ReportPage() {
 
     // Fetch Gemini response using three variables from sessionData
     const fetchGeminiResponse = async () => {
+        const formData = new FormData();
+        formData.append('left_arm', Math.floor((sessionData?.l_elbow_angle / 180) * 100));
+        formData.append('right_arm', Math.floor((sessionData?.r_elbow_angle / 180) * 100));
+        formData.append('bpm', Math.floor(sessionData?.bpm));
         try {
+            console.log('Sending data to Gemini:');
             const response = await fetch('http://127.0.0.1:5000/gemini', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    left_arm: sessionData?.l_elbow_angle,
-                    right_arm: sessionData?.r_elbow_angle,
-                    bpm: sessionData?.bpm,
-                }),
+                body: formData,
             });
 
             const geminiResponseText = await response.text();
+            console.log('hello');
             console.log(geminiResponseText);
             setGeminiResponse(geminiResponseText);
 
@@ -47,20 +48,23 @@ function ReportPage() {
             if (error) {
                 console.error("Error fetching session data:", error);
             } else {
+                console.log("Fetched session data:", data); // <--- Add this
                 setSessionData(data);
             }
+
         };
         if (sessionId) {
-            fetchSessionData();
+            fetchSessionData().then();
         }
     }, [sessionId]);
 
     // Trigger Gemini fetch when sessionData is available
     useEffect(() => {
         if (sessionData) {
-            fetchGeminiResponse();
+            fetchGeminiResponse().then();
         }
     }, [sessionData]);
+
 
     return (
         <div id='page' className='flex flex-col items-center justify-center h-screen gap-16'>

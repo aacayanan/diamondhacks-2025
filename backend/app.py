@@ -1,3 +1,4 @@
+import math
 import os
 
 import cv2
@@ -6,9 +7,12 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from video_process import process_video
 from google import genai
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 load_dotenv()
+
 
 @app.route("/")
 def home():
@@ -48,43 +52,38 @@ def process():
     return f"Video saved and processed at: {save_path}", 200
 
 
-@app.route('/gemini', methods=['POST', 'OPTIONS'])
+@app.route('/gemini', methods=['POST'])
 def gemini():
-    if request.method == 'OPTIONS':
-        print("meow")
-        return jsonify({'response': "meow"})
-        # Load environment variables
-        dotenv_path = find_dotenv()
-        load_dotenv(dotenv_path)
-        gemini_key = os.getenv('GEMINI_KEY')
+    left_arm = request.form['left_arm']
+    right_arm = request.form['right_arm']
+    bpm = request.form['bpm']
 
-        # Get data from POST request
-        data = request.get_json()
-        left_arm = data.get('left_arm')
-        right_arm = data.get('right_arm')
-        bpm = data.get('bpm')
+    # # Load environment variables
+    # dotenv_path = find_dotenv()
+    # load_dotenv(dotenv_path)
+    gemini_key = os.getenv('GEMINI_KEY')
 
-        # Prepare prompt dynamically
-        system_prompt = (
-            "You are an AI assistant that gives CPR performance feedback.\n"
-            "Do not have an humanoid introduction, it should be straight to the point.\n"
-            "Evaluate the following metrics and give constructive advice:\n"
-        )
-        content = f"Left Arm Accuracy: {left_arm} Right Arm Accuracy: {right_arm} BPM: {bpm}"
+    # Prepare prompt dynamically
+    system_prompt = (
+        "You are an AI assistant that gives CPR performance feedback.\n"
+        "Do not have an humanoid introduction, it should be straight to the point.\n"
+        "Evaluate the following metrics and give constructive advice:\n"
+    )
+    content = f"Left Arm Angle Straightness Accuracy: {left_arm}% Right Arm Angle Straightness Accuracy: {right_arm}% BPM: {bpm}"
 
-        # Set up Gemini client
-        client = genai.Client(api_key=gemini_key)
+    # Set up Gemini client
+    client = genai.Client(api_key=gemini_key)
 
-        # Call Gemini model
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=[system_prompt + content],
-        )
+    # Call Gemini model
+    response = client.models.generate_content(
+        model='gemini-2.0-flash',
+        contents=[system_prompt + content],
+    )
 
-        # Extract and return the generated text
-        generated_text = response.candidates[0].content.parts[0].text
-        print(generated_text)
-        return jsonify({'response': generated_text})
+    # Extract and return the generated text
+    generated_text = response.candidates[0].content.parts[0].text
+    print(generated_text)
+    return generated_text
 
 
 if __name__ == "__main__":
