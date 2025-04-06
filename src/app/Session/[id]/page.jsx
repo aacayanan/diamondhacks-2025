@@ -78,6 +78,7 @@ function SessionPage() {
                 ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
                 ctx.strokeStyle = "red";
+                ctx.globalAlpha = 0.5;
                 ctx.lineWidth = 10;
                 ctx.moveTo(0, 420);
                 ctx.lineTo(720, 420);
@@ -119,12 +120,12 @@ function SessionPage() {
 
     // Start recorder for the stream that has no drawn anchors
     const startRecording = async () => {
-        function countdownTimer() {
-            setCountdown(countdown - 1);
-            if (countdown > 0) {
-                setTimeout(countdownTimer, 1000)
-            }
-        }
+        (function countDownTimer(i) {
+            setTimeout(function () {
+                if (--i) countDownTimer(i);
+                setCountdown(i);
+            }, 1000)
+        })(5);
 
         //delay before starting recording
         await new Promise(resolve => setTimeout(resolve, 5000));
@@ -218,7 +219,7 @@ function SessionPage() {
                     <h1>New Session</h1>
                 </div>
                 <div id="video-container" className="flex justify-center align-content rounded-lg bg-zinc-100">
-                    <div id="video-style" className="rounded-lg border-black p-4">
+                    <div id="video-style" className="flex justify-center center-items rounded-lg border-black p-4">
                         <video
                             id="webcam-feed"
                             ref={videoRef}
@@ -234,12 +235,12 @@ function SessionPage() {
                             ref={canvasRef}
                             width={videoWidth}
                             height={videoHeight}
-                            className="rounded-lg rotate-y-180 border border-gray-400"
+                            className="rounded-lg rotate-y-180 border border-gray-400 z-0"
                         />
-                        {countdown > 0 && (
-                            <div className="w-28 p-2.5 inline-flex flex-col justify-center items-center gap-2.5">
+                        {countdown !== 0 && (
+                            <p className="absolute flex align-center justify-center text-white text-9xl font-bold z-10">
                                 {countdown}
-                            </div>
+                            </p>
                         )}
                     </div>
                 </div>
